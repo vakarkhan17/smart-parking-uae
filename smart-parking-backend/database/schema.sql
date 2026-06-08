@@ -1,0 +1,32 @@
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  full_name VARCHAR(150) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  is_email_verified BOOLEAN DEFAULT FALSE,
+  email_verification_code VARCHAR(10),
+  email_verification_expires TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS vehicles (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  emirate VARCHAR(80) NOT NULL,
+  plate_code VARCHAR(20),
+  plate_color VARCHAR(30),
+  plate_number VARCHAR(20) NOT NULL,
+  is_default BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS bookings (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  parking_name VARCHAR(255) NOT NULL,
+  parking_address TEXT,
+  vehicle_id INTEGER REFERENCES vehicles(id) ON DELETE SET NULL,
+  duration_hours INTEGER NOT NULL DEFAULT 1,
+  amount_aed NUMERIC(10,2) NOT NULL DEFAULT 0,
+  status VARCHAR(30) DEFAULT 'active',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
