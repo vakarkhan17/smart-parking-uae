@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "Smart UAE Parking",
+    "slug": "smart-parking-uae",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "smartparkinguae",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vakar.khan.smartparkinguae"
+    },
+    "android": {
+      "package": "com.vakar.khan.smartparkinguae",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAgRl_gBYRuz6d4cXlQwvi5uwDSSgPTpv4"
+        }
+      },
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#00732f"
+      }
+    },
+    "plugins": [
+      "expo-location"
+    ],
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/icon.png"
+    }
+  }
+}
