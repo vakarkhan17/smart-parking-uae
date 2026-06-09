@@ -42,7 +42,7 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [search, setSearch] = useState("Dubai Marina");
+  const [search, setSearch] = useState("");
   const [mapType, setMapType] = useState("roadmap");
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState([]);
@@ -114,7 +114,22 @@ function App() {
         mapTypeControl: false,
       });
       setMap(m);
-      await searchParking("Dubai Marina", m);
+      if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const loc = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+      };
+      m.setCenter(loc);
+      m.setZoom(15);
+      searchParkingNear(loc, m);
+    },
+    () => {
+      setMessage("Allow location or search your area manually.");
+    }
+  );
+}
     } catch (e) { setMessage(e.message); }
   }
 
@@ -122,7 +137,51 @@ function App() {
     markers.forEach((marker) => marker.setMap(null));
     setMarkers([]);
   }
+async function searchParkingNear(location, activeMap = map) {
+  try {
+    if (!activeMap) return;
 
+    setBusy(true);
+    setMessage("");
+
+    const maps = await loadGoogleMaps();
+    const service = new maps.places.PlacesService(activeMap);
+
+    service.nearbySearch(
+      {
+        location,
+        radius: 5000,
+        type: "parking",
+      },
+      (results, status) => {
+        if (status !== maps.places.PlacesServiceStatus.OK) {
+          setMessage("No nearby parking found.");
+          setBusy(false);
+          return;
+        }
+
+        clearMarkers();
+
+        const newMarkers = [];
+
+        results.forEach((place) => {
+          const marker = new maps.Marker({
+            map: activeMap,
+            position: place.geometry.location,
+            title: place.name,
+          });
+
+          newMarkers.push(marker);
+        });
+
+        setMarkers(newMarkers);
+        setBusy(false);
+      }
+    );
+  } catch (e) {
+    setMessage(e.message);
+  }
+}
   async function searchParking(query = search, activeMap = map) {
     try {
       if (!activeMap) return;
