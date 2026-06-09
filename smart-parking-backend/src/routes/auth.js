@@ -17,7 +17,11 @@ router.post("/register", async (req, res) => {
     const code = generateCode();
     const expires = new Date(Date.now() + 10 * 60 * 1000);
     const result = await db.query("INSERT INTO users (full_name, email, password_hash, email_verification_code, email_verification_expires) VALUES ($1,$2,$3,$4,$5) RETURNING id, full_name, email, is_email_verified", [fullName, email.toLowerCase(), passwordHash, code, expires]);
-    await sendVerificationEmail(email.toLowerCase(), code);
+    try {
+  await sendVerificationEmail(email, code);
+} catch (mailError) {
+  console.error("Email send failed:", mailError.message);
+}
     return res.status(201).json({ message: "Registration successful. Please verify your email.", user: result.rows[0] });
   } catch (error) { console.error(error); return res.status(500).json({ message: "Registration failed" }); }
 });
